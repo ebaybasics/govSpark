@@ -5,8 +5,10 @@ Orchestrates the entire pipeline: loading → tokenizing → embedding → clust
 
 from modules.load_document import load_html_document, validate_document_content
 from modules.tokenize import tokenize_into_sentences, get_tokenization_stats
+from modules.embed_text import create_embeddings, get_embedding_stats, save_embeddings
 from config import DOCUMENT_PATH
 import sys
+
 
 def main():
     """
@@ -15,7 +17,7 @@ def main():
     This function calls each module in sequence:
     1. Load the HTML document
     2. Tokenize into sentences
-    3. Create embeddings (to be implemented)
+    3. Create embeddings using SBERT
     4. Reduce dimensions (to be implemented)
     5. Cluster sentences (to be implemented)
     6. Visualize clusters (to be implemented)
@@ -62,9 +64,28 @@ def main():
         print(f"❌ Error during tokenization: {e}")
         sys.exit(1)
     
+    # Step 3: Create embeddings using SBERT
+    print("\n🧠 Creating sentence embeddings using SBERT...")
+    try:
+        embeddings = create_embeddings(sentences, show_progress=True)
+        
+        # Get and display embedding statistics
+        embed_stats = get_embedding_stats(embeddings)
+        print(f"✅ Embeddings created successfully:")
+        print(f"   • Number of embeddings: {embed_stats['num_embeddings']:,}")
+        print(f"   • Embedding dimensions: {embed_stats['embedding_dim']}")
+        print(f"   • Mean norm: {embed_stats['mean_norm']:.3f}")
+        print(f"   • Memory usage: {embed_stats['memory_mb']:.1f} MB")
+        
+        # Save embeddings for potential reuse
+        save_embeddings(embeddings, "embeddings.npy")
+        
+    except Exception as e:
+        print(f"❌ Error during embedding creation: {e}")
+        sys.exit(1)
+    
     # Placeholder for remaining steps
     print(f"\n⏳ Next steps (to be implemented):")
-    print(f"   • Create embeddings using SBERT")
     print(f"   • Reduce dimensions with UMAP")
     print(f"   • Cluster using HDBSCAN")
     print(f"   • Visualize clusters")
