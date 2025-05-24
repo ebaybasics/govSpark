@@ -1,9 +1,9 @@
 # main.py
 
-from my_python_project.src.loader import load_data
-from my_python_project.src.chunker import chunk_data, process_chunks
-from my_python_project.src.summarizer import summarize_data
-from my_python_project.src.aggregator import combine_results
+from source_files.src.loader import load_data
+from source_files.src.chunker import chunk_data, process_chunks
+from source_files.src.summarizer import summarize_data
+from source_files.src.aggregator import combine_results
 
 def main():
     # Load data

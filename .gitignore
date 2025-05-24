@@ -7,3 +7,4 @@ env/
 # editor
 .vscode/
 .idea/
+credentials.py
