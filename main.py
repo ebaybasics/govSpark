@@ -1,33 +1,77 @@
-# main.py
+"""
+Main execution file for govSpark document analysis.
+Orchestrates the entire pipeline: loading → tokenizing → embedding → clustering → visualization
+"""
 
-from source_files.src.loader import load_data
-from source_files.src.chunker import chunk_data, process_chunks
-from source_files.src.summarizer import summarize_data
-from source_files.src.aggregator import combine_results
-from html_parser import HTMLParser
+from modules.load_document import load_html_document, validate_document_content
+from modules.tokenize import tokenize_into_sentences, get_tokenization_stats
+from config import DOCUMENT_PATH
+import sys
 
 def main():
-    """Main function to demonstrate HTML parser usage."""
+    """
+    Main function that orchestrates the entire document analysis pipeline.
     
-    # Create an instance of our HTML parser
-    parser = HTMLParser()
+    This function calls each module in sequence:
+    1. Load the HTML document
+    2. Tokenize into sentences
+    3. Create embeddings (to be implemented)
+    4. Reduce dimensions (to be implemented)
+    5. Cluster sentences (to be implemented)
+    6. Visualize clusters (to be implemented)
+    7. Summarize results (to be implemented)
+    """
     
-    # Example HTML source - replace with your actual HTML file or URL
-    html_source = "BILLS.html"  # Could be a file path or URL
+    print("🚀 Starting govSpark Document Analysis Pipeline")
+    print("=" * 60)
     
-    # Load the HTML document
-    if parser.load_html(html_source):
-        print(f"Successfully loaded HTML from: {html_source}")
+    # Step 1: Load the HTML document
+    print(f"📄 Loading document: {DOCUMENT_PATH}")
+    try:
+        document_text = load_html_document(DOCUMENT_PATH)
         
-        # Example of extracting information
-        title = parser.get_title()
-        print(f"Document title: {title}")
+        # Validate the loaded content
+        if not validate_document_content(document_text):
+            print("❌ Error: Document content appears to be invalid or too short")
+            sys.exit(1)
+            
+        print(f"✅ Successfully loaded document ({len(document_text):,} characters)")
         
+    except Exception as e:
+        print(f"❌ Error loading document: {e}")
+        sys.exit(1)
+    
+    # Step 2: Tokenize the document into sentences
+    print("\n🔤 Tokenizing document into sentences...")
+    try:
+        sentences = tokenize_into_sentences(document_text)
+        
+        # Get and display tokenization statistics
+        stats = get_tokenization_stats(sentences)
+        print(f"✅ Tokenization complete:")
+        print(f"   • Total sentences: {stats['total_sentences']:,}")
+        print(f"   • Average length: {stats['avg_length']:.1f} characters")
+        print(f"   • Length range: {stats['min_length']}-{stats['max_length']} characters")
+        
+        # Show a few example sentences
+        print(f"\n📝 Example sentences:")
+        for i, sentence in enumerate(sentences[:3]):
+            print(f"   {i+1}. {sentence[:100]}{'...' if len(sentence) > 100 else ''}")
+            
+    except Exception as e:
+        print(f"❌ Error during tokenization: {e}")
+        sys.exit(1)
+    
+    # Placeholder for remaining steps
+    print(f"\n⏳ Next steps (to be implemented):")
+    print(f"   • Create embeddings using SBERT")
+    print(f"   • Reduce dimensions with UMAP")
+    print(f"   • Cluster using HDBSCAN")
+    print(f"   • Visualize clusters")
+    print(f"   • Generate cluster summaries")
+    
+    print(f"\n🎉 Pipeline execution complete!")
 
-        # The parsed document is now in memory and ready to be used
-        print("HTML document loaded and parsed successfully!")
-    else:
-        print(f"Failed to load HTML from: {html_source}")
 
 if __name__ == "__main__":
     main()
